@@ -28,24 +28,36 @@ async def analyze_with_ai(content: str) -> dict:
             "insights": "Merci pour cette entree. Continue a ecrire regulierement.",
             "questions": ["Comment te sens-tu ?", "Qu est-ce qui pourrait changer demain ?"]
         }
+    result = ""
     try:
         client = Groq(api_key=GROQ_API_KEY)
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
-                {"role": "system", "content": "Tu es MindFlow, un companion bienveillant. Analyse ce journal et genere une reponse JSON avec: insights (2-3 phrases empathiques) et questions (liste de 2 questions). Reponds UNIQUEMENT avec du JSON valide."},
+                {"role": "system", "content": "Tu es MindFlow, un companion bienveillant. Reponds UNIQUEMENT avec ce JSON exact, sans texte avant ou apres: {\"insights\": \"tes 2-3 phrases empathiques ici\", \"questions\": [\"question 1\", \"question 2\"]}"},
                 {"role": "user", "content": content}
             ],
             temperature=0.7,
             max_tokens=500
         )
         result = response.choices[0].message.content.strip()
+        print(f"GROQ RAW: {result[:100]} - journal.py:44")
+        if "```" in result:
+            result = result.split("```")[1]
+            if result.startswith("json"):
+                result = result[4:]
         return json.loads(result)
-    except Exception as e:
-        print(f"GROQ ERROR: {e} - journal.py:45")
+    except json.JSONDecodeError as e:
+        print(f"JSON ERROR: {e}, raw: {result[:100]} - journal.py:51")
         return {
-            "insights": "Merci pour cette entree sincere. Prendre le temps d ecrire est deja un acte de soin.",
-            "questions": ["Qu est-ce qui t a le plus pese aujourd hui ?", "De quoi aurais-tu besoin pour aller mieux ?"]
+            "insights": result if result else "Merci pour cette entree.",
+            "questions": ["Comment te sens-tu maintenant ?", "Qu est-ce qui t aiderait aujourd hui ?"]
+        }
+    except Exception as e:
+        print(f"GROQ ERROR: {e} - journal.py:57")
+        return {
+            "insights": "Merci pour cette entree sincere.",
+            "questions": ["Qu est-ce qui t a pese ?", "De quoi as-tu besoin ?"]
         }
 
 class JournalCreate(BaseModel):
