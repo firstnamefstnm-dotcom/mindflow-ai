@@ -49,13 +49,13 @@ async def send_welcome_email(email: str, first_name: str, lang: str = "en"):
                 "https://api.brevo.com/v3/smtp/email",
                 headers={"api-key": api_key, "Content-Type": "application/json"},
                 json={
-                    "sender": {"name": "MindFlow AI", "email": "noreply@mindflow-ai-livid.vercel.app"},
+                    "sender": {"name": "MindFlow AI", "email": "firstnamefstnm@gmail.com"},
                     "to": [{"email": email, "name": first_name}],
                     "subject": subject,
                     "textContent": body
                 }
             )
-            print(f"Email sent to {email}  status: {r.status_code} - auth.py:58")
+            print(f"Email sent to {email}  status: {r.status_code}  {r.text[:100]} - auth.py:58")
     except Exception as e:
         print(f"Email error: {e} - auth.py:60")
 
