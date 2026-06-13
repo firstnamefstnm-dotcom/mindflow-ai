@@ -14,7 +14,11 @@ app = FastAPI(title="MindFlow AI", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+    "http://localhost:3000",
+    "https://mindflow-ai-livid.vercel.app",
+    "https://mindflow-5vid5zo6s-firstname-s-projects1.vercel.app"
+],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
