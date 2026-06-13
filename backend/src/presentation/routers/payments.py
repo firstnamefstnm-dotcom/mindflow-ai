@@ -2,6 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from jose import jwt, JWTError
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import stripe, os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 router = APIRouter(prefix="/payments", tags=["payments"])
 security = HTTPBearer()
@@ -16,16 +19,21 @@ def get_current_user_id(credentials: HTTPAuthorizationCredentials = Depends(secu
 
 @router.post("/create-checkout")
 async def create_checkout(user_id: str = Depends(get_current_user_id)):
-    stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-    PRICE_ID = os.getenv("STRIPE_PRICE_ID")
-    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+    key = os.getenv("STRIPE_SECRET_KEY", "")
+    price_id = os.getenv("STRIPE_PRICE_ID", "")
+    frontend_url = os.getenv("FRONTEND_URL", "https://mindflow-ai-livid.vercel.app")
+    print(f"STRIPE KEY: {key[:10] if key else 'MISSING'} - payments.py:25")
+    print(f"PRICE ID: {price_id} - payments.py:26")
+    if not key:
+        raise HTTPException(status_code=500, detail="Stripe not configured")
+    stripe.api_key = key
     try:
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
-            line_items=[{"price": PRICE_ID, "quantity": 1}],
+            line_items=[{"price": price_id, "quantity": 1}],
             mode="subscription",
-            success_url=f"{FRONTEND_URL}?success=true",
-            cancel_url=f"{FRONTEND_URL}?canceled=true",
+            success_url=f"{frontend_url}?success=true",
+            cancel_url=f"{frontend_url}?canceled=true",
             metadata={"user_id": user_id}
         )
         return {"checkout_url": session.url}
@@ -35,15 +43,6 @@ async def create_checkout(user_id: str = Depends(get_current_user_id)):
 @router.get("/plans")
 async def get_plans():
     return {
-        "free": {
-            "name": "Gratuit",
-            "price": 0,
-            "features": ["3 entrées journal/semaine", "Check-in quotidien", "Insights basiques"]
-        },
-        "premium": {
-            "name": "Premium",
-            "price": 9.99,
-            "currency": "EUR",
-            "features": ["Journal illimité", "IA 24/7", "Analyses avancées", "Rapports hebdomadaires"]
-        }
+        "free": {"name": "Gratuit", "price": 0, "features": ["3 entrées/semaine", "Insights basiques"]},
+        "premium": {"name": "Premium", "price": 4.99, "currency": "AUD", "features": ["Journal illimité", "IA 24/7", "Analyses avancées"]}
     }
