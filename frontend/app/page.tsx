@@ -67,6 +67,13 @@ export default function Home() {
     setInsight(null)
   }
 
+  const upgrade = async () => {
+    try {
+      const r = await api.post('/payments/create-checkout', {}, {headers:{Authorization:`Bearer ${token}`}})
+      window.location.href = r.data.checkout_url
+    } catch { alert('Erreur lors de la redirection vers le paiement') }
+  }
+
   const emoji = (s: number) => s<=2?'😢':s<=4?'😔':s<=6?'😐':s<=8?'🙂':'😊'
 
   if(!token) return (
@@ -133,7 +140,13 @@ export default function Home() {
           </div>
           <span className="font-semibold">MindFlow AI</span>
         </div>
-        <button onClick={logout} className="text-gray-400 hover:text-gray-600 text-sm">Déconnexion</button>
+        <div className="flex items-center gap-3">
+          <button onClick={upgrade}
+            className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-medium transition-colors">
+            ⭐ Premium 9.99€/mois
+          </button>
+          <button onClick={logout} className="text-gray-400 hover:text-gray-600 text-sm">Déconnexion</button>
+        </div>
       </header>
       <main className="max-w-2xl mx-auto p-6 space-y-6">
         <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
