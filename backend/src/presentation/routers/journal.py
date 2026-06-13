@@ -1,5 +1,4 @@
-python3 << 'PYEOF'
-content = '''from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from src.infrastructure.database.connection import get_db
@@ -23,7 +22,7 @@ def get_current_user_id(credentials: HTTPAuthorizationCredentials = Depends(secu
 
 async def analyze_with_ai(content: str) -> dict:
     GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-    print(f"DEBUG GROQ KEY: {GROQ_API_KEY[:10] if GROQ_API_KEY else 'MISSING'} - journal.py:26")
+    print(f"DEBUG GROQ KEY: {GROQ_API_KEY[:10] if GROQ_API_KEY else 'MISSING'} - journal.py:25")
     if not GROQ_API_KEY:
         return {
             "insights": "Merci pour cette entree. Continue a ecrire regulierement.",
@@ -43,7 +42,7 @@ async def analyze_with_ai(content: str) -> dict:
         result = response.choices[0].message.content.strip()
         return json.loads(result)
     except Exception as e:
-        print(f"GROQ ERROR: {e} - journal.py:46")
+        print(f"GROQ ERROR: {e} - journal.py:45")
         return {
             "insights": "Merci pour cette entree sincere. Prendre le temps d ecrire est deja un acte de soin.",
             "questions": ["Qu est-ce qui t a le plus pese aujourd hui ?", "De quoi aurais-tu besoin pour aller mieux ?"]
@@ -93,8 +92,3 @@ async def get_entries(
     entries = result.scalars().all()
     return [{"id": str(e.id), "content": e.content, "mood_score": e.mood_score,
              "ai_insights": e.ai_insights, "created_at": e.created_at} for e in entries]
-'''
-with open('/Users/amirkharroubi/mindflow-ai/backend/src/presentation/routers/journal.py', 'w') as f:
-    f.write(content)
-print("OK - journal.py:99")
-PYEOF
