@@ -143,7 +143,7 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <button onClick={upgrade}
             className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-medium transition-colors">
-            ⭐ Premium 9.99€/mois
+            ⭐ Premium 4.99$/mois
           </button>
           <button onClick={logout} className="text-gray-400 hover:text-gray-600 text-sm">Déconnexion</button>
         </div>
