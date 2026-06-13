@@ -6,7 +6,7 @@ from src.domain.models.user import User
 from pydantic import BaseModel
 from jose import jwt
 from datetime import datetime, timedelta, timezone
-import bcrypt, os, resend
+import bcrypt, os, httpx
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 SECRET_KEY = os.getenv("SECRET_KEY", "mindflow-secret")
@@ -34,51 +34,30 @@ def create_token(user_id: str) -> str:
     return jwt.encode({"sub": user_id, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
 
 async def send_welcome_email(email: str, first_name: str, lang: str = "en"):
-    resend.api_key = os.getenv("RESEND_API_KEY", "")
-    if not resend.api_key:
+    api_key = os.getenv("BREVO_API_KEY", "")
+    if not api_key:
         return
     if lang == "fr":
-        subject = "Bienvenue sur MindFlow AI 🧠"
-        body = f"""Bonjour {first_name},
-
-Bienvenue sur MindFlow AI !
-
-Tu as fait le premier pas vers une meilleure comprehension de toi-meme.
-
-Pour commencer :
-1. Ecris ta premiere entree de journal
-2. Laisse l'IA analyser tes emotions
-3. Reponds aux questions de reflexion
-
-👉 https://mindflow-ai-livid.vercel.app
-
-L'equipe MindFlow"""
+        subject = "Bienvenue sur MindFlow AI"
+        body = f"Bonjour {first_name},\n\nBienvenue sur MindFlow AI !\n\nCommence a ecrire ton journal :\nhttps://mindflow-ai-livid.vercel.app\n\nL'equipe MindFlow"
     else:
-        subject = "Welcome to MindFlow AI 🧠"
-        body = f"""Hi {first_name},
-
-Welcome to MindFlow AI!
-
-You've taken the first step toward better understanding yourself.
-
-To get started:
-1. Write your first journal entry
-2. Let the AI analyze your emotions
-3. Answer the reflection questions
-
-👉 https://mindflow-ai-livid.vercel.app
-
-The MindFlow Team"""
+        subject = "Welcome to MindFlow AI"
+        body = f"Hi {first_name},\n\nWelcome to MindFlow AI!\n\nStart journaling now:\nhttps://mindflow-ai-livid.vercel.app\n\nThe MindFlow Team"
     try:
-        resend.Emails.send({
-            "from": os.getenv("FROM_EMAIL", "onboarding@resend.dev"),
-            "to": email,
-            "subject": subject,
-            "text": body
-        })
-        print(f"Welcome email sent to {email} - auth.py:79")
+        async with httpx.AsyncClient() as client:
+            r = await client.post(
+                "https://api.brevo.com/v3/smtp/email",
+                headers={"api-key": api_key, "Content-Type": "application/json"},
+                json={
+                    "sender": {"name": "MindFlow AI", "email": "noreply@mindflow-ai-livid.vercel.app"},
+                    "to": [{"email": email, "name": first_name}],
+                    "subject": subject,
+                    "textContent": body
+                }
+            )
+            print(f"Email sent to {email}  status: {r.status_code} - auth.py:58")
     except Exception as e:
-        print(f"Email error: {e} - auth.py:81")
+        print(f"Email error: {e} - auth.py:60")
 
 @router.post("/register", status_code=201)
 async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
