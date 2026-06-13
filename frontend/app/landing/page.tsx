@@ -65,9 +65,9 @@ export default function Landing() {
         <p className="text-center text-gray-500 mb-12">3 étapes pour transformer ta vie intérieure</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { step: '01', title: 'Écris librement', desc: 'Ouvre ton journal et écris ce que tu ressens. Pas de règles, pas de jugement. MindFlow t'écoute.', emoji: '✍️' },
-            { step: '02', title: 'L'IA analyse', desc: 'Notre IA comprend tes émotions, détecte les patterns et génère des insights personnalisés pour toi.', emoji: '🧠' },
-            { step: '03', title: 'Tu progresses', desc: 'Des questions de réflexion, des exercices pratiques et un suivi de ton bien-être semaine après semaine.', emoji: '📈' }
+            { step: '01', title: 'Ecris librement', desc: 'Ouvre ton journal. Pas de regles, pas de jugement. MindFlow ecoute.', emoji: '✍️' },
+            { step: '02', title: 'IA analyse', desc: 'Notre IA comprend tes emotions et genere des insights personnalises.', emoji: '🧠' },
+            { step: '03', title: 'Tu progresses', desc: 'Des exercices pratiques et un suivi de ton bien-etre chaque semaine.', emoji: '📈' }
           ].map(item => (
             <div key={item.step} className="text-center p-6">
               <div className="text-4xl mb-4">{item.emoji}</div>
