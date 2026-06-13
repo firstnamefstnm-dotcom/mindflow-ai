@@ -19,8 +19,15 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [insight, setInsight] = useState<Entry|null>(null)
   const [error, setError] = useState('')
+  const [priceDisplay, setPriceDisplay] = useState('...')
 
-  useEffect(() => { const t = localStorage.getItem('token'); if(t){setToken(t);load(t)} }, [])
+  useEffect(() => {
+    const t = localStorage.getItem('token')
+    if(t){setToken(t);load(t)}
+    api.get('/payments/pricing').then(r => {
+      setPriceDisplay(r.data.price)
+    }).catch(() => setPriceDisplay('2.99'))
+  }, [])
 
   const load = async (t: string) => {
     try { const r = await api.get('/journal/', {headers:{Authorization:`Bearer ${t}`}}); setEntries(r.data) } catch{}
@@ -143,7 +150,7 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <button onClick={upgrade}
             className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-medium transition-colors">
-            ⭐ Premium 4.99$/mois
+            ⭐ Premium {priceDisplay}/mois
           </button>
           <button onClick={logout} className="text-gray-400 hover:text-gray-600 text-sm">Déconnexion</button>
         </div>
