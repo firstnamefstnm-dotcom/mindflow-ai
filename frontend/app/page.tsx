@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const api = axios.create({ baseURL: 'http://localhost:8000/api/v1' })
+const api = axios.create({ baseURL: 'https://mindflow-backend-8kws.onrender.com/api/v1' })
 
 interface Entry { id: string; content: string; mood_score: number; ai_insights: string; ai_questions: string[]; created_at: string }
 
