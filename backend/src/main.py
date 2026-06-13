@@ -5,6 +5,11 @@ from src.infrastructure.database.connection import init_db
 from src.domain.models import user, journal
 from src.presentation.routers import auth, journal as journal_router
 
+from src.presentation.routers import payments
+# et dans les include_router :
+app.include_router(payments.router, prefix="/api/v1")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
