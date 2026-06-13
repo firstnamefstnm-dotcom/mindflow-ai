@@ -17,6 +17,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://mindflow-ai-livid.vercel.app",
+        "https://mindflow.vercel.app",
         "https://mindflow-5vid5zo6s-firstname-s-projects1.vercel.app"
     ],
     allow_credentials=True,
