@@ -22,6 +22,7 @@ def get_current_user_id(credentials: HTTPAuthorizationCredentials = Depends(secu
         raise HTTPException(status_code=401, detail="Invalid token")
 
 async def analyze_with_ai(content: str) -> dict:
+    print(f"DEBUG GROQ KEY: {GROQ_API_KEY[:10] if GROQ_API_KEY else 'MISSING'} - journal.py:25")
     if not GROQ_API_KEY or GROQ_API_KEY == "gsk_your-key-here":
         return {
             "insights": "Merci pour cette entrée. Continue à écrire régulièrement — chaque mot compte.",
