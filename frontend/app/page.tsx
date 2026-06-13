@@ -105,7 +105,7 @@ export default function Home() {
     if(!token || content.length < 10) return
     setLoading(true)
     try {
-      const r = await api.post('/journal/', {content, mood_score: mood}, {headers:{Authorization:`Bearer ${token}`}})
+      const r = await api.post('/journal/', {content, mood_score: mood, lang}, {headers:{Authorization:`Bearer ${token}`}})
       setInsight(r.data)
       setContent('')
       load(token)
